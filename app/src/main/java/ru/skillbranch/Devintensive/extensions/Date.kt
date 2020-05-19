@@ -1,0 +1,124 @@
+package ru.skillbranch.Devintensive.extensions
+
+import java.text.SimpleDateFormat
+import java.util.*
+
+const val SECOND = 1000L
+const val MINUTE = 60 * SECOND
+const val HOUR = 60 * MINUTE
+const val DAY = 24 * HOUR
+
+
+fun Date.format(pattern: String = "HH:mm:ss dd.MM.yy"): String {
+    val dateFormat = SimpleDateFormat(pattern, Locale("ru"))
+    return dateFormat.format(this)
+}
+
+fun Date.add(value: Int, units: TimeUnits = TimeUnits.SECOND): Date {
+    var time = this.time
+    time += when (units) {
+        TimeUnits.SECOND -> value * SECOND
+        TimeUnits.MINUTE -> value * MINUTE
+        TimeUnits.HOUR -> value * HOUR
+        TimeUnits.DAY -> value * DAY
+    }
+    this.time = time
+    return this
+}
+
+enum class TimeUnits {
+    SECOND,
+    MINUTE,
+    HOUR,
+    DAY
+}
+
+fun secondsConverter(arrayOfTime: Array<Int>, timeValue: Long): Array<Int> {
+    for (i in arrayOfTime.indices) {
+        arrayOfTime[i] = ((arrayOfTime[i] * timeValue) / 1000).toInt()
+    }
+    return arrayOfTime
+}
+
+fun Date.humanizeDiff(date: Date = Date()): String {
+    val differenceSeconds: Int = ((Date().time - this.time) / SECOND).toInt()
+    var time: String
+    var firstMinutesRange: Array<Int> = arrayOf(3, 4, 22, 23, 24, 32, 33, 34) //минуты
+    var secondMinutesRange: Array<Int> = arrayOf(
+        5, 6, 7, 8, 9, 10, 11, 25, 26,
+        27, 28, 29, 30, 35, 36, 37, 38, 39, 40
+    ) //минут
+    var thirdMinutesRange: Array<Int> = arrayOf(21, 31, 41) // минуту
+    firstMinutesRange = secondsConverter(firstMinutesRange, MINUTE)
+    secondMinutesRange = secondsConverter(secondMinutesRange, MINUTE)
+    thirdMinutesRange = secondsConverter(thirdMinutesRange, MINUTE)
+    var firstHourRange: Array<Int> = arrayOf(1, 21) // час
+    var secondHourRange: Array<Int> = arrayOf(2, 3, 4, 22) // часа
+    var thirdHourRange: Array<Int> =
+        arrayOf(5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20) //часов
+    firstHourRange = secondsConverter(firstHourRange, HOUR)
+    secondHourRange = secondsConverter(secondHourRange, HOUR)
+    thirdHourRange = secondsConverter(thirdHourRange, HOUR)
+    var daysArray = Array(360) { i -> i + 1 }
+    daysArray = secondsConverter(daysArray, DAY)
+
+    val minWord = "минут"
+    val hourWord = "час"
+    time = when (differenceSeconds) {
+        in 0..1 -> "только что"
+        in 2..45 -> "несколько секунд назад"
+        in 46..75 -> "минуту назад"
+        in 76..120 -> "две минуты назад"
+        in 45 * 60..75 * 60 -> "час назад"
+        in 79201..93601 -> "день назад"
+        else -> "более года назад"
+    }
+
+    for (i in firstMinutesRange.indices) {
+        if (differenceSeconds == firstMinutesRange[i])
+            time = "${firstMinutesRange[i] / 60} ${minWord}ы назад"
+
+    }
+    for (i in secondMinutesRange.indices) {
+        if (differenceSeconds == secondMinutesRange[i])
+            time = "${secondMinutesRange[i] / 60} $minWord назад"
+    }
+    for (i in thirdMinutesRange.indices) {
+        if (differenceSeconds == thirdMinutesRange[i])
+            time = "${thirdMinutesRange[i] / 60} ${minWord}у назад"
+    }
+
+    for (i in firstHourRange.indices) {
+        if (differenceSeconds == firstHourRange[i])
+            time = "${firstHourRange[i] / 3600} ${hourWord} назад"
+    }
+    for (i in secondHourRange.indices) {
+        if (differenceSeconds == secondHourRange[i])
+            time = "${secondHourRange[i] / 3600} ${hourWord}а назад"
+    }
+    for (i in thirdHourRange.indices) {
+        if (differenceSeconds == thirdHourRange[i])
+            time = "${thirdHourRange[i] / 3600} ${hourWord}ов назад"
+    }
+
+    for (i in daysArray.indices) {
+        daysArray[i]=daysArray[i]/86400
+        if (differenceSeconds/86400 == daysArray[i]) {
+            time = if (daysArray[i] in 2..4)
+                "${daysArray[i]} дня назад"
+            else if (daysArray[i] in 5..9)
+                "${daysArray[i]} дней назад"
+            else {
+                if ((daysArray[i] / 10) % 10 == 1)
+                    "${daysArray[i]} дней назад"
+                else if (daysArray[i] % 10 == 0 || daysArray[i] % 10 >= 5)
+                    "${daysArray[i]} дней назад"
+                else if (daysArray[i] % 10 == 2 || daysArray[i] % 10 == 3 || daysArray[i] % 10 == 4)
+                    "${daysArray[i]} дня назад"
+                else
+                    "${daysArray[i]} день назад"
+            }
+        }
+    }
+    return time
+}
