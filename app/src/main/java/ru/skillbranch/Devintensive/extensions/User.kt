@@ -5,7 +5,7 @@ import ru.skillbranch.Devintensive.models.UserView
 
 
 fun User.toUserView(): UserView {
-    val nickname = ""//Utils.transliteration("$firstName $lastName")
+    val nickname = ""
     val initials = ""
     val status =
         when {
@@ -15,7 +15,7 @@ fun User.toUserView(): UserView {
         }
 
     return UserView(
-        id,
+        id!!,
         fullName = "$firstName $lastName",
         nickName = nickname,
         initials = initials,
