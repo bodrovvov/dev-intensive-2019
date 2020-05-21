@@ -7,9 +7,7 @@ object Utils {
         val parts: List<String>? = fullName?.split(" ")
         val firstName = parts?.getOrNull(0)
         val lastName = parts?.getOrNull(1)
-        if (firstName == "") return null to null
-        if (lastName == "") return firstName to null
-        return firstName to lastName
+        return (if (firstName == "") null else firstName) to (if (lastName == "") null else lastName)
     }
 
 }

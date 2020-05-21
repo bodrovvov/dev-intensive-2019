@@ -4,13 +4,13 @@ import ru.skillbranch.Devintensive.utils.Utils
 import java.util.*
 
 data class User(
-    val id: String?,
+    val id: String,
     var firstName: String?,
     var lastName: String?,
     var avatar: String?,
     var rating: Int = 0,
     var respect: Int = 0,
-    var lastVisit: Date? = null,
+    var lastVisit: Date? = Date(),
     var isOnline: Boolean = false
 ) {
     constructor(id: String, firstName: String?, lastName: String?) : this(
@@ -40,7 +40,7 @@ data class User(
         fun respect(respect: Int) = apply { this.respect = respect }
         fun lastVisit(lastVisit: Date) = apply { this.lastVisit = lastVisit }
         fun isOnline(isOnline: Boolean) = apply { this.isOnline = isOnline }
-        fun build() = User(id, firstName, lastName, avatar, rating, respect, lastVisit, isOnline)
+        fun build() = User(id!!, firstName, lastName, avatar, rating, respect, lastVisit, isOnline)
     }
 
     init {
