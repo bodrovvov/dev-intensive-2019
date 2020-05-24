@@ -22,7 +22,7 @@ data class User(
 
     constructor(id: String) : this(id, "John", "Doe $id")
 
-    data class UserBuilder(
+    data class Builder(
         var id: String,
         var firstName: String?,
         var lastName: String?,
@@ -40,7 +40,7 @@ data class User(
         fun respect(respect: Int) = apply { this.respect = respect }
         fun lastVisit(lastVisit: Date) = apply { this.lastVisit = lastVisit }
         fun isOnline(isOnline: Boolean) = apply { this.isOnline = isOnline }
-        fun build() = UserBuilder("11","John","Black","sfg")
+        fun build() = Builder("11","John","Black","sfg")
     }
 
     init {
