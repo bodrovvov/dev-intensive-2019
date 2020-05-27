@@ -11,17 +11,30 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
         Question.IDLE -> Question.IDLE.question
     }
 
-    fun listenAnswer(answer: String): Pair<String, Triple<Int, Int, Int>> {
-        return if (question.answer.contains(answer)) {
-            question = question.nextQuestion()
-            "Отлично - ты справился!\n${question.question}" to status.color
-        } else {
-            status = status.nextStatus()
-            "Это неправильный ответ. Давай все по новой\n${question.question}" to status.color
+    fun listenAnswer(answer:String):Pair<String, Triple<Int, Int, Int>>{
+        return when(question){
+            Question.IDLE -> question.question to status.color
+            else -> "${checkAnswer(answer)}\n${question.question}" to status.color
         }
-
     }
 
+    private fun checkAnswer(answer: String): String {
+        return if (question.answer.contains(answer)) {
+            question = question.nextQuestion()
+            "Отлично - ты справился"
+        }
+        else {
+            if (status == Status.CRITICAL){
+                status = Status.NORMAL
+                question = Question.NAME
+                "Это неправильный ответ. Давай все по новой"
+            }
+            else{
+                status = status.nextStatus()
+                "Это неправильный ответ"
+            }
+        }
+    }
 
     enum class Status(val color: Triple<Int, Int, Int>) {
         NORMAL(Triple(255, 255, 255)),
