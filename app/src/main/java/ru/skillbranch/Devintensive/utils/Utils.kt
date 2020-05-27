@@ -10,3 +10,4 @@ object Utils {
         return (if (firstName == "") null else firstName) to (if (lastName == "") null else lastName)
     }
 }
+
